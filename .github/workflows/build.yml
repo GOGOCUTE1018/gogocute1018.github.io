@@ -1,0 +1,37 @@
+name: Build HTML
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "data.json"
+      - "template.html"
+      - "build.py"
+      - ".github/workflows/build.yml"
+  workflow_dispatch: # 允许手动触发
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write # 赋予写入权限以便提交 index.html
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Run build script
+        run: python build.py
+
+      - name: Commit and Push changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "🤖 Auto-build: Update index.html"
+          file_pattern: "index.html"
